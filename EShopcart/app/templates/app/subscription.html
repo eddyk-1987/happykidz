@@ -1,0 +1,66 @@
+{% extends 'app/base.html' %} {% load static %} {% block title %}subscription
+{% endblock title %} {% block main-content %}
+<div class="container my-5">
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="list-group">
+        <a
+          href="{% url 'subscription' %}"
+          class="list-group-item list-group-item-action btn {% if data is None %}active{% endif %}"
+          aria-current="true"
+        >
+          All Subscription
+        </a>
+        <a
+          href="{% url 'subscriptiondata' '12-Months-Subscription' %}"
+          class="list-group-item list-group-item-action btn {% if data == '12-Months-Subscription' %}active{% endif %}"
+        >
+          12-Months-Subscription
+        </a>
+        <a
+          href="{% url 'subscriptiondata' '3-to-6-months-subscription' %}"
+          class="list-group-item list-group-item-action btn {% if data == '3-to-6-months-subscription' %}active{% endif %}"
+        >
+          6-Months-or-Less-Subscription
+        </a>
+        <!-- <a
+          href="{% url 'subscriptiondata' 'below' %}"
+          class="list-group-item list-group-item-action btn {% if data == 'below' %}active{% endif %}"
+        >
+          Less than 400
+        </a>
+        <a
+          href="{% url 'subscriptiondata' 'above' %}"
+          class="list-group-item list-group-item-action btn {% if data == 'above' %}active{% endif %}"
+        >
+          Greater than 500
+        </a> -->
+      </div>
+    </div>
+
+
+<div class="col-sm-8 offset-1 ">
+ <div class="row">
+  {% for product in subscriptions %}
+  <div class="col-md-6  text-center mb-4">
+    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded" style="width:14rem;" >
+            <div class="inner">
+              <img src="{{ product.product_image.url }}" class="card-img-top" alt="Card image cap" height="240">
+            </div>
+            <div class="card-body">
+              <strong><h5 class="card-title">{{product.title}}</h5></strong>
+              
+              <h6>MYR {{product.discounted_price}} 
+              <small class="fw-light text-decoration-line-through">MYR {{product.selling_price}}</small></h6>
+              <a href="{% url 'product-detail' product.id %}" class="btn btn-success">Check Now</a>
+            </div>
+    </div>
+   </div>
+   {% endfor %}
+ </div>
+</div>
+
+  </div>
+</div>
+
+{% endblock main-content %}

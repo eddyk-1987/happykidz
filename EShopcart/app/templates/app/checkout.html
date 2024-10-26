@@ -1,0 +1,107 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Buy Now{% endblock title %}
+{% block main-content %}
+
+<div class="container">
+ <div class="row mt-5">
+  <div class="col-sm-6">
+    <h4>Order Summary</h4>
+    {% for item in cart_items %}
+    <hr>
+      <div class="card mb-2">
+        <div class="card-body">
+          <h5>Product: <a href="{% url 'product-detail' item.product.id %}">{{item.product.title}} </a> </h5>
+          <p>Quantity: {{item.quantity}} </p>
+          <p class="fw-bold">Price:{{item.total_cost}} </p>
+        </div>
+      </div>
+      {% endfor %}
+      <p class="fw-bold"> Total Cost + Shipping Charge: MYR 0 = {{totalamount}}</p>
+
+    <small>Term and Condition: 
+      By providing your contact information, you consent to receive marketing communications from Happykidz. 
+      This may include newsletters, promotional offers, and updates about our products and services. 
+      All payments made are non-refundable. 
+      Once payment is received, the funds shall not be returned for any reason.
+    </small>
+  </div>
+  <div class="col-sm-4 offset-sm-1">
+    <h4>Select Shipping Address</h4>
+    <form action="/paymentdone" id='myform' >
+      {% for ad in add %}
+       <hr>
+      <div class="card">
+        <div class="card-body">
+        <h5>{{ad.name}}</h5>
+        <p>{{ad.address}}, {{ad.city}}, {{ad.state}} -{{ad.postcode}}</p>
+        </div>
+      </div>
+
+        <div class="form-check mt-2 mb-5">
+          <input class="form-check-input" type="radio"
+          name="custid" id="custadd{{forloop.counter}}" value="{{ad.id}}">
+          <label class="form-check-label fw-bold" for="">
+            Address: {{forloop.counter}} </label>
+        </div>
+          {% endfor %}
+
+         <div class="text-end">
+          {% comment %}<button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Continue</button>{% endcomment %}
+
+          {% if add|length != 0 %}
+          <div id="paypal-button-container"> </div>
+
+          {% else %}
+           <a href='{% url 'profile' %}' class="btn btn-danger" >Add Address First</a>
+
+          {% endif %}
+              </div>
+         </form>
+
+
+
+
+
+        <!-- Set up a container element for the button -->
+
+
+  </div>
+</div>
+{% endblock main-content %}
+
+
+{% block payment-gateway %}
+                  <!-- Include the PayPal JavaScript SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=AYtXX-Y-qqGE9kv4g95_CwWJSCmNjCPqOY-qfiKLQ3MHzUoo8jbDjBxzHSP5LRlrlYhuN2oyNtaq3e_Y"></script>
+                    <script>
+                        // Render the PayPal button into #paypal-button-container
+                        paypal.Buttons({
+
+                            // Set up the transaction
+                            createOrder: function (data, actions) {
+                                return actions.order.create({
+                                    purchase_units: [{
+                                        amount: {
+                                            value: {{totalamount}}
+                                        }
+                                    }]
+                                });
+                            },
+
+                            // Finalize the transaction
+                            onApprove: function (data, actions) {
+                                return actions.order.capture().then(function (details) {
+                                    // Show a success message to the buyer
+                                    alert('Transaction completed by ' + details.payer.name
+                                        .given_name + '!');
+                                       document.getElementById('myform').submit();
+
+                                });
+                            }
+                        }).render('#paypal-button-container');
+                    </script>
+
+{% endblock payment-gateway %}
+
+
